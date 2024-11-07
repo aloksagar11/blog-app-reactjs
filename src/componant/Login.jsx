@@ -1,31 +1,33 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as authLogin } from "../store/authSlice";
-import { Button, Input, Logo } from "./index";
+import {  Input, Logo } from "./index";
+import Button from "./Button"
 import authService from "../appwrite/auth";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 
 const Login = () => {
   const navigate = useNavigate();
-  const dipatch = useDispatch();
+  const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
   const [error, setError] = useState(null);
 
-  const login = async () => {
+  const login = async (data) => {
     setError("");
     try {
       const session = await authService.login(data);
       if (session) {
-        const userData = await authService.getCurrentUser();
+        const userData  = await authService.getCurrentUser();
+        console.log(userData)
         if (userData) {
-          useDispatch(authLogin(userData));
-          navigate("/ ");
+          dispatch (authLogin(userData));
+          navigate("/");
         }
       } else throw new Error("Invalid credentials");
     } catch (error) {
       setError(error.message);
-    }
+    } 
   };
 
   return (
@@ -46,7 +48,7 @@ const Login = () => {
                 Sign Up
             </Link>
         </p>
-        {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
+        {error && <p className="text-red-600 mt-ce8 text-nter">{error}</p>}
 
         <form  onSubmit={handleSubmit(login)} className="mt-8">
             <div className="space-y-5">
@@ -54,31 +56,31 @@ const Login = () => {
                 type="email"
                 name="email"
                 placeholder  = "Enter your email"
-                {...register("email"),{
+                {...register("email",{
                     requied : true,
                     validate:{
                         matchPatern: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
                         "Email address must be a valid address",
                     }
-                }}
+                })}
                 />
 
                 <Input
                 type = "password" 
                 placeholder = "Enter your password"
                 name="password"
-                {...register("password"),{
+                {...register("password",{
                     required: true,
                     minLength: {
                         value: 8,
                         message: "Minimum length should be 8 characters"
 
                     },
-                }}
+                })}
                 />
 
                 <Button 
-                type="submit" className='w-full'> Sing in</Button>
+                type="submit" className='w-full px-4 py-2 border rounded-lg bg-slate-200 hover:bg-slate-300'> Sing in </Button>
             </div>
         </form>
       </div>
